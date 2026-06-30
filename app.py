@@ -1,12 +1,15 @@
-from vision import analyze_screen
+from rajora_ai.vision import analyze_screen
+import sys
+from PyQt6.QtWidgets import QApplication
+from rajora_ai.ui import MainWindow
 
 def main():
-    print("\nRunning Rajora AI Prototype...\n")
+    app = QApplication(sys.argv)
 
-    result = analyze_screen()
+    window = MainWindow()
+    window.show()
 
-    print("\nAI RESPONSE:\n")
-    print(result)
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

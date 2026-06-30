@@ -11,7 +11,17 @@ Playwright
 SQLite
 
 Current Status:
-Week 1 Prototype
+Week 1 Prototype:
+
+Implemented:
+
+- Project structure and package organization
+- OpenRouter API integration
+- Screenshot capture
+- AI-based screen understanding
+- Configurable environment using `.env`
+- Modular architecture
+- PyQt6 desktop interface
 
 Planned Features:
 Screen understanding
