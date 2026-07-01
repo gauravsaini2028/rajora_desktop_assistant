@@ -3,6 +3,7 @@ import base64
 from pathlib import Path
 from datetime import datetime
 from openai import OpenAI 
+from .logger import logger
 from .config import(
     OPENROUTER_API_KEY,
     MODEL_NAME,
@@ -20,15 +21,18 @@ SCREENSHOT_DIR = Path("screenshots")
 
 
 def capture_screen():
+    logger.info("Capturing desktop screenshot")
     SCREENSHOT_DIR.mkdir(exist_ok=True)
     filename = datetime.now().strftime("%Y%m%d_%H%M%S.png")
     image_path = SCREENSHOT_DIR / filename
     screenshot = pyautogui.screenshot()
     screenshot.save(image_path)
+    logger.info(f"Screenshot saved to {image_path}")
     return image_path
 
 
 def encode_image(image_path):
+    logger.info("Encoding screenshot to Base64")
     with open(image_path, "rb") as image_file:
         return base64.b64encode(
             image_file.read()
@@ -36,7 +40,7 @@ def encode_image(image_path):
      
 
 def build_messages(prompt, image_base64):
-
+    logger.info("Building messages for vision model")
     return [
         {
             "role": "system",
@@ -72,17 +76,22 @@ def build_messages(prompt, image_base64):
 
 
 def call_model(messages):
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=messages,
-        temperature=TEMPERATURE,
-        max_tokens=MAX_TOKENS,
-    )
+    logger.info(f"Sending request to model: {MODEL_NAME}")
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=messages,
+            temperature=TEMPERATURE,
+            max_tokens=MAX_TOKENS,
+        )
+    except Exception:
+        logger.exception("Failed to communicate with OpenRouter")
+        raise
 
     print("=" * 80)
     print(response.model_dump())
     print("=" * 80)
-
+    logger.info("Received response from vision model")
     return response.choices[0].message.content
 
 
